@@ -21,7 +21,7 @@ const csp = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  output: "standalone",
+  ...(process.env.VERCEL ? {} : { output: "standalone" }),
   async headers() {
     return [
       {

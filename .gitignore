@@ -3,6 +3,7 @@ node_modules
 .env
 .env.local
 *.db
+!prisma/dev.db
 *.db-journal
 storage/uploads
 next-env.d.ts
