@@ -20,8 +20,10 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  reactStrictMode: true,
   ...(process.env.VERCEL ? {} : { output: "standalone" }),
+  outputFileTracingIncludes: {
+    "/**": ["./prisma/dev.db"],
+  },
   async headers() {
     return [
       {
