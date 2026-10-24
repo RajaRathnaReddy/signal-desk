@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Newsreader } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./site.css";
 import "./admin.css";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 import { organizationJsonLd, siteUrl, ldString } from "@/lib/seo";
 
-const serif = Newsreader({ subsets: ["latin"], variable: "--font-newsreader", display: "swap", style: ["normal", "italic"], weight: ["400", "500", "600", "700"] });
+const display = Outfit({ subsets: ["latin"], variable: "--font-display", display: "swap", weight: ["400", "500", "600", "700", "800"] });
 const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const tech = Space_Grotesk({ subsets: ["latin"], variable: "--font-tech", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#faf8f4" }, { media: "(prefers-color-scheme: dark)", color: "#0e0e10" }],
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f8fafc" }, { media: "(prefers-color-scheme: dark)", color: "#07090e" }],
   width: "device-width",
   initialScale: 1,
 };
@@ -31,7 +32,7 @@ const themeInit = `try{var t=localStorage.getItem('sd-theme');if(!t){t=matchMedi
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${tech.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ldString(organizationJsonLd()) }} />

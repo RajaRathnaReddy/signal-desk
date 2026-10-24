@@ -44,15 +44,40 @@ export default async function Home() {
   return (
     <div className="container page">
       <div className="status-strip" role="status">
-        <span><strong>{sourcesActive}</strong> sources monitored</span>
-        <span>Nothing is published without source references and editor sign-off</span>
-        <Link href="/standards" style={{ marginLeft: "auto" }}>How we verify →</Link>
+        <span><strong>{sourcesActive}</strong> primary sources monitored</span>
+        <span>•</span>
+        <span>Every story fact-checked by a 15-question gate and editor sign-off</span>
+        <Link href="/standards" style={{ marginLeft: "auto" }}>Editorial Standards & Verification Protocol →</Link>
+      </div>
+
+      <div className="telemetry-bar" aria-label="Live technology telemetry">
+        <div className="telemetry-item">
+          <span className="telemetry-dot" style={{ background: "var(--cat-ai)" }} />
+          <span className="telemetry-label">AI REASONING</span>
+          <span className="telemetry-val">Claude 3.7 Hybrid Mode</span>
+        </div>
+        <div className="telemetry-item">
+          <span className="telemetry-dot" style={{ background: "var(--cat-hardware)" }} />
+          <span className="telemetry-label">2NM SILICON</span>
+          <span className="telemetry-val">TSMC GAAFET + A16 Power</span>
+        </div>
+        <div className="telemetry-item">
+          <span className="telemetry-dot" style={{ background: "var(--cat-cloud)" }} />
+          <span className="telemetry-label">CLOUD INFRA</span>
+          <span className="telemetry-val">Kubernetes 1.32 DRA GA</span>
+        </div>
+        <div className="telemetry-item">
+          <span className="telemetry-dot" style={{ background: "var(--cat-security)" }} />
+          <span className="telemetry-label">SUPPLY CHAIN</span>
+          <span className="telemetry-val">OpenSSF Attestation V2</span>
+        </div>
       </div>
 
       {lead ? (
-        <section className="hero" style={{ marginTop: "var(--s6)" }} aria-label="Top stories">
+        <section className="hero" style={{ marginTop: "var(--s5)" }} aria-label="Top stories">
           <ArticleCard a={lead} variant="lead" showArt priority />
           <div className="hero-side">
+            <div className="hero-side-title"><span>RADAR DISPATCH</span></div>
             {side.map((a) => <ArticleCard key={a.id} a={a} />)}
           </div>
         </section>

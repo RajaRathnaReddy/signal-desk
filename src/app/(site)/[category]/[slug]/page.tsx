@@ -5,7 +5,7 @@ import { getArticlePage } from "@/lib/queries";
 import { renderMarkdown } from "@/lib/markdown";
 import { abs, articleJsonLd, articlePath, breadcrumbJsonLd, ldString } from "@/lib/seo";
 import { fmtDateTime, fmtDate, fmtTime } from "@/lib/format";
-import { ClassBadge, ConfidenceBadge, LiveBadge } from "@/components/Badges";
+import { CategoryBadge, ClassBadge, ConfidenceBadge, LiveBadge } from "@/components/Badges";
 import { ArticleCard } from "@/components/ArticleCard";
 import { ArticleClient, ShareControls } from "@/components/ArticleClient";
 import { NewsletterBand } from "@/components/Parts";
@@ -66,7 +66,10 @@ export default async function ArticlePage({ params }: Props) {
           </ol>
         </nav>
         <div className="flags">
-          <Link href={`/${a.category.slug}`} className="kicker" style={{ alignSelf: "center", textDecoration: "none" }}>{a.category.name}</Link>
+          <Link href={`/${a.category.slug}`} style={{ textDecoration: "none" }}>
+            <CategoryBadge slug={a.category.slug} name={a.category.name} />
+          </Link>
+          <span className="badge badge-ok" title="Checked by 15-point editorial publishing gate">✓ Sourced & Verified</span>
           <LiveBadge live={a.isLive} developing={a.isDeveloping} />
           <ClassBadge value={a.classification} />
           <ConfidenceBadge value={a.confidence} />

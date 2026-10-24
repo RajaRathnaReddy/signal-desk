@@ -26,7 +26,7 @@
 }
 
 .admin-sidebar-head .desk-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--step-1);
 }
