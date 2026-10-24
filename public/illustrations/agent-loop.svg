@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="t d">
+  <title id="t">The basic agent loop</title>
+  <desc id="d">A goal enters a model. The model picks an action, a tool runs it, the result returns to the model, and the loop repeats until the task is done.</desc>
+  <rect width="1200" height="675" fill="#f3efe7"/>
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#16161a">
+    <text x="60" y="80" font-size="22" letter-spacing="3" fill="#8a8478">DIAGRAM · THE AGENT LOOP</text>
+    <rect x="60" y="250" width="200" height="110" rx="4" fill="none" stroke="#16161a" stroke-width="2"/>
+    <text x="160" y="298" font-size="26" text-anchor="middle" font-weight="600">Goal</text>
+    <text x="160" y="330" font-size="18" text-anchor="middle" fill="#5d5a52">from the user</text>
+    <path d="M262 305 H360" stroke="#16161a" stroke-width="2" fill="none" marker-end="url(#a)"/>
+    <rect x="364" y="230" width="270" height="150" rx="4" fill="#16161a"/>
+    <text x="499" y="293" font-size="28" text-anchor="middle" fill="#f3efe7" font-weight="600">Language model</text>
+    <text x="499" y="328" font-size="18" text-anchor="middle" fill="#cfc9bb">decides the next step</text>
+    <path d="M636 275 H760" stroke="#d9402a" stroke-width="3" fill="none" marker-end="url(#r)"/>
+    <text x="698" y="262" font-size="16" text-anchor="middle" fill="#d9402a">action</text>
+    <rect x="764" y="230" width="230" height="150" rx="4" fill="none" stroke="#16161a" stroke-width="2"/>
+    <text x="879" y="293" font-size="26" text-anchor="middle" font-weight="600">Tool</text>
+    <text x="879" y="326" font-size="18" text-anchor="middle" fill="#5d5a52">search · code · files</text>
+    <path d="M879 382 V470 H499 V384" stroke="#d9402a" stroke-width="3" fill="none" marker-end="url(#r)"/>
+    <text x="690" y="500" font-size="16" text-anchor="middle" fill="#d9402a">result returns as text</text>
+    <path d="M499 228 V150 H1060" stroke="#16161a" stroke-width="2" stroke-dasharray="7 6" fill="none" marker-end="url(#a)"/>
+    <rect x="1064" y="110" width="100" height="80" rx="4" fill="none" stroke="#16161a" stroke-width="2"/>
+    <text x="1114" y="157" font-size="22" text-anchor="middle" font-weight="600">Done</text>
+    <text x="640" y="136" font-size="16" text-anchor="middle" fill="#5d5a52">stops when finished or at a limit</text>
+    <text x="60" y="600" font-size="18" fill="#5d5a52">A fixed sequence of calls is a workflow. In an agent, the model chooses which branch to take.</text>
+  </g>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#16161a"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#d9402a"/></marker>
+  </defs>
+</svg>

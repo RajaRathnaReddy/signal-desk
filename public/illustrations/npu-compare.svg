@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="t d">
+  <title id="t">CPU, GPU and NPU compared</title>
+  <desc id="d">A chart placing CPU, GPU and NPU along two axes: flexibility and power efficiency for neural-network work. The CPU is most flexible, the NPU most efficient, the GPU in between.</desc>
+  <rect width="1200" height="675" fill="#f3efe7"/>
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#16161a">
+    <text x="60" y="80" font-size="22" letter-spacing="3" fill="#8a8478">DIAGRAM · CPU, GPU AND NPU</text>
+    <path d="M140 540 V150" stroke="#16161a" stroke-width="2" fill="none" marker-end="url(#a)"/>
+    <path d="M140 540 H1090" stroke="#16161a" stroke-width="2" fill="none" marker-end="url(#a)"/>
+    <text x="155" y="168" font-size="18" fill="#5d5a52">Power efficiency on neural-network work</text>
+    <text x="1090" y="580" font-size="18" text-anchor="end" fill="#5d5a52">Flexibility across kinds of software →</text>
+    <g stroke="#cfc9bb" stroke-width="1" stroke-dasharray="4 6"><path d="M140 345 H1080"/><path d="M615 540 V160"/></g>
+    <circle cx="930" cy="440" r="62" fill="none" stroke="#16161a" stroke-width="3"/>
+    <text x="930" y="448" font-size="30" font-weight="700" text-anchor="middle">CPU</text>
+    <text x="930" y="540" font-size="0"> </text>
+    <circle cx="620" cy="330" r="74" fill="#16161a"/>
+    <text x="620" y="340" font-size="30" font-weight="700" text-anchor="middle" fill="#f3efe7">GPU</text>
+    <circle cx="300" cy="215" r="66" fill="#d9402a"/>
+    <text x="300" y="225" font-size="30" font-weight="700" text-anchor="middle" fill="#f3efe7">NPU</text>
+    <text x="935" y="520" font-size="17" text-anchor="middle" fill="#5d5a52">general-purpose</text>
+    <text x="620" y="430" font-size="17" text-anchor="middle" fill="#5d5a52">massively parallel</text>
+    <text x="300" y="305" font-size="17" text-anchor="middle" fill="#5d5a52">narrow, low power</text>
+    <text x="60" y="630" font-size="18" fill="#5d5a52">Schematic only. Positions are illustrative, not measurements of any particular chip.</text>
+  </g>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#16161a"/></marker></defs>
+</svg>

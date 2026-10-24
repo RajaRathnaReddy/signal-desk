@@ -1,0 +1,335 @@
+/* ──────────────────────────────────────────────────────────────
+   Signal Desk Newsroom Admin & Editorial Control Center CSS
+   ────────────────────────────────────────────────────────────── */
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.admin-sidebar {
+  width: 16rem;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-head {
+  padding: var(--s4) var(--s5);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-sidebar-head .desk-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: var(--step-1);
+}
+
+.admin-nav {
+  padding: var(--s3) 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.admin-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem var(--s5);
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--ink-2);
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.admin-nav a:hover,
+.admin-nav a[aria-current="page"] {
+  background: var(--surface-2);
+  color: var(--ink);
+  border-left-color: var(--accent);
+}
+
+.admin-nav .count-badge {
+  font-size: var(--step--2);
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--ink-2);
+}
+
+.admin-nav a:hover .count-badge {
+  background: var(--line-strong);
+  color: var(--ink);
+}
+
+.admin-sidebar-user {
+  padding: var(--s4) var(--s5);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  font-size: var(--step--1);
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 0.8rem var(--s6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+}
+
+.admin-topbar .admin-title {
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 600;
+}
+
+.admin-content {
+  padding: var(--s6);
+  flex: 1;
+  max-width: 88rem;
+  width: 100%;
+}
+
+/* Metrics Dashboard Strip */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--s4);
+  margin-bottom: var(--s6);
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s3) var(--s4);
+}
+
+.metric-card .num {
+  font-family: var(--font-serif);
+  font-size: var(--step-4);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+}
+
+.metric-card .label {
+  font-size: var(--step--2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.metric-card.warn .num { color: var(--warn); }
+.metric-card.bad .num { color: var(--bad); }
+.metric-card.ok .num { color: var(--ok); }
+
+/* Editorial Tabs */
+.queue-tabs {
+  display: flex;
+  gap: var(--s2);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--s5);
+  padding-bottom: 1px;
+}
+
+.queue-tab {
+  padding: 0.55rem 0.9rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.queue-tab:hover {
+  color: var(--ink);
+}
+
+.queue-tab[aria-current="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* Editorial Story List Items */
+.story-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s4) var(--s5);
+  margin-bottom: var(--s3);
+  display: grid;
+  gap: var(--s3);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.story-item:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
+}
+
+.story-item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+
+.story-item h3 {
+  font-size: var(--step-1);
+  margin: 0;
+}
+
+.story-item h3 a {
+  text-decoration: none;
+}
+.story-item h3 a:hover {
+  text-decoration: underline;
+}
+
+.story-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+/* Cluster Box */
+.cluster-box {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: var(--s4) var(--s5);
+  margin-bottom: var(--s4);
+}
+
+.cluster-box .headline {
+  font-size: var(--step-2);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  margin-bottom: var(--s2);
+}
+
+.cluster-items {
+  margin-top: var(--s3);
+  padding-left: 1.2rem;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+/* Two-column Article Editor */
+.editor-grid {
+  display: grid;
+  gap: var(--s6);
+}
+
+@media (min-width: 1080px) {
+  .editor-grid {
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  }
+}
+
+.editor-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s5);
+  margin-bottom: var(--s5);
+}
+
+.editor-card h2, .editor-card h3 {
+  font-size: var(--step-1);
+  margin-bottom: var(--s4);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--s2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* QC Checklist in Admin */
+.qc-list {
+  display: grid;
+  gap: var(--s2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+.qc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s3);
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.qc-item.pass .qc-icon { color: var(--ok); }
+.qc-item.fail .qc-icon { color: var(--bad); }
+.qc-item.warn .qc-icon { color: var(--warn); }
+
+.score-meter {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  margin-bottom: var(--s3);
+}
+
+.score-num {
+  font-family: var(--font-serif);
+  font-size: var(--step-4);
+  font-weight: 700;
+}
+
+.gate-box {
+  background: var(--surface-2);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: var(--s4);
+  margin-top: var(--s4);
+}
+
+.gate-box.allowed {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+
+.gate-box.blocked {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+}

@@ -1,0 +1,358 @@
+// Prisma schema (SQLite for local development).
+// Enum-like fields are stored as strings and validated in src/lib/constants.ts so the
+// same models work on SQLite and PostgreSQL. For production run `npm run db:postgres`,
+// which generates prisma/schema.postgres.prisma and switches the provider.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String    @default("WRITER") // ADMIN | EDITOR | WRITER | VIEWER
+  active       Boolean   @default(true)
+  failedLogins Int       @default(0)
+  lockedUntil  DateTime?
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+  reviews      EditorialReview[]
+  authorProfile Author?
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String
+  sortOrder   Int       @default(0)
+  inNav       Boolean   @default(true)
+  articles    Article[]
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  articles Article[]
+}
+
+model Author {
+  id      String    @id @default(cuid())
+  slug    String    @unique
+  name    String
+  bio     String    @default("")
+  isTeam  Boolean   @default(false)
+  userId  String?   @unique
+  user    User?     @relation(fields: [userId], references: [id])
+  articles Article[]
+}
+
+model Source {
+  id                  String    @id @default(cuid())
+  name                String
+  url                 String
+  type                String    @default("RSS") // RSS | ATOM | API | OFFICIAL_BLOG | GOVERNMENT | RESEARCH
+  categorySlug        String?
+  tier                Int       @default(2) // 1 = primary/official, 2 = reputable press, 3 = lead only
+  feedUrl             String
+  active              Boolean   @default(true)
+  status              String    @default("UNTESTED") // UNTESTED | HEALTHY | DEGRADED | FAILING
+  lastSuccessAt       DateTime?
+  lastAttemptAt       DateTime?
+  lastError           String?
+  consecutiveFailures Int       @default(0)
+  etag                String?
+  lastModifiedHeader  String?
+  itemsLastFetch      Int       @default(0)
+  createdAt           DateTime  @default(now())
+  items               FeedItem[]
+  articleSources      ArticleSource[]
+
+  @@unique([feedUrl])
+}
+
+model FeedItem {
+  id          String        @id @default(cuid())
+  sourceId    String
+  guid        String
+  url         String
+  title       String
+  snippet     String        @default("") // truncated; we deliberately never store full article text
+  publishedAt DateTime?
+  fetchedAt   DateTime      @default(now())
+  entities    String        @default("[]") // JSON array of detected companies/products
+  clusterId   String?
+  status      String        @default("NEW") // NEW | CLUSTERED | IGNORED
+  source      Source        @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  cluster     StoryCluster? @relation(fields: [clusterId], references: [id])
+
+  @@unique([sourceId, guid])
+  @@index([clusterId])
+  @@index([publishedAt])
+}
+
+model StoryCluster {
+  id         String     @id @default(cuid())
+  headline   String
+  entities   String     @default("[]")
+  status     String     @default("OPEN") // OPEN | DRAFTED | DISMISSED
+  topTier    Int        @default(3)
+  sourceCount Int       @default(1)
+  signal     Float      @default(0) // significance estimate, not virality
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  items      FeedItem[]
+  articles   Article[]
+
+  @@index([status])
+}
+
+model Article {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  categoryId       String
+  authorId         String
+  classification   String    @default("NEWS")
+  status           String    @default("COLLECTED")
+  confidence       String    @default("UNCONFIRMED")
+  title            String
+  deck             String    @default("")
+  seoTitle         String    @default("")
+  metaDescription  String    @default("")
+  bodyMd           String    @default("")
+  keyTakeaways     String    @default("[]") // JSON string array
+  whyItMatters     String    @default("")
+  contextMd        String    @default("")
+  technicalMd      String    @default("")
+  companies        String    @default("[]")
+  isDeveloping     Boolean   @default(false)
+  isLive           Boolean   @default(false)
+  editorsPick      Boolean   @default(false)
+  qualityScore     Int?
+  qcReport         String?   // JSON QcReport
+  readingMinutes   Int       @default(1)
+  publishAt        DateTime?
+  publishedAt      DateTime?
+  modifiedAt       DateTime?
+  needsReview      Boolean   @default(false)
+  automationDrafted Boolean  @default(false)
+  clusterId        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  category  Category  @relation(fields: [categoryId], references: [id])
+  author    Author    @relation(fields: [authorId], references: [id])
+  cluster   StoryCluster? @relation(fields: [clusterId], references: [id])
+  tags      Tag[]
+  images    Image[]
+  sources   ArticleSource[]
+  versions  ArticleVersion[]
+  updates   ArticleUpdate[]
+  reviews   EditorialReview[]
+  factChecks FactCheck[]
+  events    PublishingEvent[]
+  trending  TrendingScore?
+  analytics AnalyticsEvent[]
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([classification])
+}
+
+model Image {
+  id                   String   @id @default(cuid())
+  articleId            String
+  isHero               Boolean  @default(true)
+  url                  String
+  kind                 String   @default("ILLUSTRATION") // PHOTO_OFFICIAL | PHOTO_LICENSED | PHOTO_EDITORIAL | ILLUSTRATION | CONCEPTUAL
+  alt                  String   @default("")
+  caption              String   @default("")
+  credit               String   @default("")
+  license              String   @default("")
+  width                Int?
+  height               Int?
+  prompt               String   @default("")
+  depictsRealEvent     Boolean  @default(false)
+  status               String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  checkedById          String?
+  createdAt            DateTime @default(now())
+  article              Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+}
+
+model ArticleSource {
+  id          String   @id @default(cuid())
+  articleId   String
+  sourceId    String?
+  title       String
+  url         String
+  publisher   String
+  tier        Int      @default(2)
+  kind        String   @default("REPORT") // OFFICIAL | DOCUMENTATION | PAPER | FILING | REPORT | SOCIAL_OFFICIAL
+  notes       String   @default("") // short excerpt / paraphrase used for fact-check matching (never full article text)
+  linkOk      Boolean?
+  linkCheckedAt DateTime?
+  accessedAt  DateTime @default(now())
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  source      Source?  @relation(fields: [sourceId], references: [id])
+
+  @@index([articleId])
+}
+
+model ArticleVersion {
+  id        String   @id @default(cuid())
+  articleId String
+  version   Int
+  snapshot  String   // JSON of editable fields
+  editorId  String?
+  note      String   @default("")
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, version])
+}
+
+model ArticleUpdate {
+  id        String   @id @default(cuid())
+  articleId String
+  text      String
+  at        DateTime @default(now())
+  authorName String  @default("Editorial Team")
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+}
+
+model EditorialReview {
+  id         String   @id @default(cuid())
+  articleId  String
+  reviewerId String
+  stage      String   // FACT_CHECK | EDITOR | IMAGE | SEO
+  verdict    String   // APPROVED | CHANGES_REQUESTED | REJECTED
+  notes      String   @default("")
+  createdAt  DateTime @default(now())
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  reviewer   User     @relation(fields: [reviewerId], references: [id])
+
+  @@index([articleId, stage])
+}
+
+model FactCheck {
+  id         String   @id @default(cuid())
+  articleId  String
+  kind       String   // UNSUPPORTED_NUMBER | UNSUPPORTED_DATE | UNSUPPORTED_QUOTE | SPECIFICATION_CONFLICT | NAME_MISMATCH | LINK_BROKEN | SPECULATION_AS_FACT | SOURCE_INCONSISTENCY
+  severity   String   // CRITICAL | WARNING | INFO
+  message    String
+  detail     String   @default("")
+  resolved   Boolean  @default(false)
+  resolvedBy String?
+  resolutionNote String @default("")
+  createdAt  DateTime @default(now())
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, resolved])
+}
+
+model PublishingEvent {
+  id         String   @id @default(cuid())
+  articleId  String
+  action     String
+  actorId    String?
+  actorType  String   @default("USER") // USER | AUTOMATION
+  fromStatus String?
+  toStatus   String?
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+}
+
+model TrendingScore {
+  articleId  String   @id
+  score      Float
+  components String   @default("{}")
+  computedAt DateTime @default(now())
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model Newsletter {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  cadence     String
+  subscriptions Subscription[]
+}
+
+model Subscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  status       String   @default("PENDING") // PENDING | CONFIRMED | UNSUBSCRIBED
+  confirmToken String   @unique
+  unsubToken   String   @unique
+  createdAt    DateTime @default(now())
+  confirmedAt  DateTime?
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  subscriberId String
+  newsletterId String
+  createdAt    DateTime @default(now())
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  newsletter   Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+
+  @@id([subscriberId, newsletterId])
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  articleId   String?
+  type        String   // VIEW | READ | SHARE | SEARCH
+  value       Int      @default(1) // READ: seconds engaged
+  query       String?
+  visitorHash String
+  createdAt   DateTime @default(now())
+  article     Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, type, createdAt])
+  @@index([type, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String   @default("")
+  entityId  String?
+  meta      String   @default("{}")
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+}

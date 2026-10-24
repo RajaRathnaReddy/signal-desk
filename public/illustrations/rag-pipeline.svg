@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="t d">
+  <title id="t">A basic RAG pipeline</title>
+  <desc id="d">Documents are split into chunks, embedded and stored in an index. A question is embedded, matching chunks are retrieved, and the language model answers using them.</desc>
+  <rect width="1200" height="675" fill="#f3efe7"/>
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#16161a">
+    <text x="60" y="80" font-size="22" letter-spacing="3" fill="#8a8478">DIAGRAM · RETRIEVAL-AUGMENTED GENERATION</text>
+    <text x="60" y="160" font-size="18" fill="#8a8478" letter-spacing="2">1 · PREPARE (ONCE)</text>
+    <g stroke="#16161a" stroke-width="2" fill="none">
+      <rect x="60" y="185" width="220" height="90" rx="4"/><rect x="340" y="185" width="220" height="90" rx="4"/><rect x="620" y="185" width="220" height="90" rx="4"/>
+    </g>
+    <rect x="900" y="185" width="240" height="90" rx="4" fill="#16161a"/>
+    <text x="170" y="237" font-size="24" text-anchor="middle" font-weight="600">Documents</text>
+    <text x="450" y="237" font-size="24" text-anchor="middle" font-weight="600">Chunks</text>
+    <text x="730" y="237" font-size="24" text-anchor="middle" font-weight="600">Embeddings</text>
+    <text x="1020" y="237" font-size="24" text-anchor="middle" font-weight="600" fill="#f3efe7">Search index</text>
+    <g stroke="#16161a" stroke-width="2" fill="none"><path d="M282 230 H336" marker-end="url(#a)"/><path d="M562 230 H616" marker-end="url(#a)"/><path d="M842 230 H896" marker-end="url(#a)"/></g>
+    <line x1="60" y1="335" x2="1140" y2="335" stroke="#cfc9bb" stroke-width="2"/>
+    <text x="60" y="390" font-size="18" fill="#d9402a" letter-spacing="2">2 · ANSWER (EVERY QUESTION)</text>
+    <g stroke="#16161a" stroke-width="2" fill="none"><rect x="60" y="415" width="220" height="90" rx="4"/><rect x="340" y="415" width="220" height="90" rx="4"/></g>
+    <rect x="620" y="415" width="220" height="90" rx="4" fill="none" stroke="#d9402a" stroke-width="3"/>
+    <rect x="900" y="415" width="240" height="90" rx="4" fill="#d9402a"/>
+    <text x="170" y="467" font-size="24" text-anchor="middle" font-weight="600">Question</text>
+    <text x="450" y="467" font-size="24" text-anchor="middle" font-weight="600">Embed</text>
+    <text x="730" y="467" font-size="24" text-anchor="middle" font-weight="600">Retrieve top matches</text>
+    <text x="1020" y="467" font-size="24" text-anchor="middle" font-weight="600" fill="#f3efe7">Model answers</text>
+    <g stroke="#16161a" stroke-width="2" fill="none"><path d="M282 460 H336" marker-end="url(#a)"/><path d="M562 460 H616" marker-end="url(#a)"/><path d="M842 460 H896" marker-end="url(#a)"/></g>
+    <path d="M1020 277 V410" stroke="#d9402a" stroke-width="2" stroke-dasharray="6 6" fill="none" marker-end="url(#r)"/>
+    <text x="60" y="600" font-size="18" fill="#5d5a52">Most failures happen at the retrieval step: if the right passage is not found, the model has nothing reliable to draw on.</text>
+  </g>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#16161a"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#d9402a"/></marker>
+  </defs>
+</svg>
