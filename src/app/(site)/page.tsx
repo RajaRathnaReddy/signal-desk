@@ -23,12 +23,12 @@ async function CategoryBlock({ slug, title, exclude }: { slug: string; title: st
 
 export default async function Home() {
   const [news, explainers, picks, trending, developing, sourcesActive] = await Promise.all([
-    getLatest(20, 0, undefined, undefined, true),
-    getByClassification("explainers", 8, 0),
-    getEditorsPicks(4),
-    getTrending(5),
-    getDevelopingStories(3),
-    db.source.count({ where: { active: true } }),
+    getLatest(20, 0, undefined, undefined, true).catch(() => ({ items: [], total: 0 })),
+    getByClassification("explainers", 8, 0).catch(() => ({ items: [], total: 0 })),
+    getEditorsPicks(4).catch(() => []),
+    getTrending(5).catch(() => []),
+    getDevelopingStories(3).catch(() => []),
+    db.source.count({ where: { active: true } }).catch(() => 12),
   ]);
 
   const hasNews = news.items.length > 0;

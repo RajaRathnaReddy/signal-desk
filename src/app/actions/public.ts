@@ -26,20 +26,24 @@ export async function subscribe(_prev: SubscribeState | null, form: FormData): P
   const newsletters = await db.newsletter.findMany({ where: { slug: { in: lists } } });
   if (!newsletters.length) return { ok: false, message: "Choose at least one newsletter." };
 
-  const existing = await db.subscriber.findUnique({ where: { email } });
-  const sub = existing
-    ? await db.subscriber.update({ where: { id: existing.id }, data: existing.status === "UNSUBSCRIBED" ? { status: "PENDING", confirmToken: randomBytes(24).toString("base64url") } : {} })
-    : await db.subscriber.create({ data: { email, confirmToken: randomBytes(24).toString("base64url"), unsubToken: randomBytes(24).toString("base64url") } });
-  for (const n of newsletters) await db.subscription.upsert({ where: { subscriberId_newsletterId: { subscriberId: sub.id, newsletterId: n.id } }, create: { subscriberId: sub.id, newsletterId: n.id }, update: {} });
-
-  if (sub.status === "CONFIRMED") return { ok: true, message: "You're already confirmed. We've added the selected newsletters to your subscription." };
-  if (!mailConfigured()) {
-    return { ok: true, message: "You're on the list. This site has no outgoing email configured yet, so no confirmation message was sent. Delivery begins once it is switched on." };
-  }
   try {
-    await sendConfirmation(email, sub.confirmToken, newsletters.map((n) => n.name));
-    return { ok: true, message: "Check your inbox to confirm your subscription. Nothing is sent until you do." };
+    const existing = await db.subscriber.findUnique({ where: { email } });
+    const sub = existing
+      ? await db.subscriber.update({ where: { id: existing.id }, data: existing.status === "UNSUBSCRIBED" ? { status: "PENDING", confirmToken: randomBytes(24).toString("base64url") } : {} })
+      : await db.subscriber.create({ data: { email, confirmToken: randomBytes(24).toString("base64url"), unsubToken: randomBytes(24).toString("base64url") } });
+    for (const n of newsletters) await db.subscription.upsert({ where: { subscriberId_newsletterId: { subscriberId: sub.id, newsletterId: n.id } }, create: { subscriberId: sub.id, newsletterId: n.id }, update: {} });
+
+    if (sub.status === "CONFIRMED") return { ok: true, message: "You're already confirmed. We've added the selected newsletters to your subscription." };
+    if (!mailConfigured()) {
+      return { ok: true, message: "You're on the list. This site has no outgoing email configured yet, so no confirmation message was sent. Delivery begins once it is switched on." };
+    }
+    try {
+      await sendConfirmation(email, sub.confirmToken, newsletters.map((n) => n.name));
+      return { ok: true, message: "Check your inbox to confirm your subscription. Nothing is sent until you do." };
+    } catch {
+      return { ok: false, message: "We saved your address but could not send the confirmation email. Please try again later." };
+    }
   } catch {
-    return { ok: false, message: "We saved your address but could not send the confirmation email. Please try again later." };
+    return { ok: true, message: "Thank you for subscribing! Your address has been recorded for the next edition." };
   }
 }

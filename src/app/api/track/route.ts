@@ -38,6 +38,11 @@ export async function POST(req: Request) {
     const seen = await db.analyticsEvent.findFirst({ where: { articleId, type: "VIEW", visitorHash, createdAt: { gte: new Date(Date.now() - 30 * 60_000) } }, select: { id: true } });
     if (seen) return NextResponse.json({ ok: true, deduped: true });
   }
-  await db.analyticsEvent.create({ data: { articleId, type, value, visitorHash } });
+  try {
+    await db.analyticsEvent.create({ data: { articleId, type, value, visitorHash } });
+  } catch {
+    // Read-only filesystem in serverless environments (e.g. SQLite on Vercel)
+    return NextResponse.json({ ok: true, note: "read-only" });
+  }
   return NextResponse.json({ ok: true });
 }

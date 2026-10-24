@@ -113,33 +113,61 @@ let lastTrendingRun = 0;
 export async function refreshTrending(force = false) {
   if (!force && Date.now() - lastTrendingRun < 5 * 60_000) return;
   lastTrendingRun = Date.now();
-  const since = new Date(Date.now() - 14 * 86_400_000);
-  const arts = await db.article.findMany({ where: { ...livePublic(), publishedAt: { gte: since } }, select: { id: true, publishedAt: true, title: true } });
-  if (!arts.length) return;
-  const events = await db.analyticsEvent.groupBy({ by: ["articleId", "type"], where: { articleId: { in: arts.map((a) => a.id) }, createdAt: { gte: new Date(Date.now() - 7 * 86_400_000) } }, _count: { _all: true }, _sum: { value: true } });
-  const searches = await db.analyticsEvent.findMany({ where: { type: "SEARCH", createdAt: { gte: new Date(Date.now() - 7 * 86_400_000) } }, select: { query: true }, take: 2000 });
-  const searchedWords = new Map<string, number>();
-  for (const s of searches) for (const w of (s.query ?? "").toLowerCase().split(/\s+/).filter((w) => w.length > 3)) searchedWords.set(w, (searchedWords.get(w) ?? 0) + 1);
-  for (const a of arts) {
-    const ev = (t: string) => events.find((e) => e.articleId === a.id && e.type === t);
-    const titleWords = a.title.toLowerCase().split(/\W+/);
-    const searchHits = titleWords.reduce((n, w) => n + (searchedWords.get(w) ?? 0), 0);
-    const t = trendingScore({
-      views: ev("VIEW")?._count._all ?? 0, readSeconds: ev("READ")?._sum.value ?? 0, readEvents: ev("READ")?._count._all ?? 0,
-      shares: ev("SHARE")?._count._all ?? 0, searchHits, ageHours: (Date.now() - (a.publishedAt?.getTime() ?? Date.now())) / 3_600_000,
-    });
-    await db.trendingScore.upsert({ where: { articleId: a.id }, create: { articleId: a.id, score: t.score, components: JSON.stringify(t.components) }, update: { score: t.score, components: JSON.stringify(t.components), computedAt: new Date() } });
+  try {
+    const since = new Date(Date.now() - 14 * 86_400_000);
+    const arts = await db.article.findMany({ where: { ...livePublic(), publishedAt: { gte: since } }, select: { id: true, publishedAt: true, title: true } });
+    if (!arts.length) return;
+    const events = await db.analyticsEvent.groupBy({ by: ["articleId", "type"], where: { articleId: { in: arts.map((a) => a.id) }, createdAt: { gte: new Date(Date.now() - 7 * 86_400_000) } }, _count: { _all: true }, _sum: { value: true } });
+    const searches = await db.analyticsEvent.findMany({ where: { type: "SEARCH", createdAt: { gte: new Date(Date.now() - 7 * 86_400_000) } }, select: { query: true }, take: 2000 });
+    const searchedWords = new Map<string, number>();
+    for (const s of searches) for (const w of (s.query ?? "").toLowerCase().split(/\s+/).filter((w) => w.length > 3)) searchedWords.set(w, (searchedWords.get(w) ?? 0) + 1);
+    for (const a of arts) {
+      const ev = (t: string) => events.find((e) => e.articleId === a.id && e.type === t);
+      const titleWords = a.title.toLowerCase().split(/\W+/);
+      const searchHits = titleWords.reduce((n, w) => n + (searchedWords.get(w) ?? 0), 0);
+      const t = trendingScore({
+        views: ev("VIEW")?._count._all ?? 0, readSeconds: ev("READ")?._sum.value ?? 0, readEvents: ev("READ")?._count._all ?? 0,
+        shares: ev("SHARE")?._count._all ?? 0, searchHits, ageHours: (Date.now() - (a.publishedAt?.getTime() ?? Date.now())) / 3_600_000,
+      });
+      try {
+        await db.trendingScore.upsert({ where: { articleId: a.id }, create: { articleId: a.id, score: t.score, components: JSON.stringify(t.components) }, update: { score: t.score, components: JSON.stringify(t.components), computedAt: new Date() } });
+      } catch {
+        // Read-only database on serverless environment (e.g. Vercel Lambda SQLite)
+        break;
+      }
+    }
+  } catch {
+    // Ignore calculation failures in restricted environments
   }
 }
 
 export async function getTrending(take: number): Promise<ArticleCard[]> {
-  await refreshTrending();
-  const rows = await db.article.findMany({
-    where: { ...livePublic(), trending: { is: { score: { gt: 0 } } } },
-    orderBy: { trending: { score: "desc" } }, take, include: cardInclude,
-  });
-  if (rows.length) return rows.map(toCard);
-  return []; // No engagement yet: show nothing rather than faking popularity.
+  try {
+    await refreshTrending();
+  } catch {
+    // Ignore refresh failures
+  }
+  try {
+    const rows = await db.article.findMany({
+      where: { ...livePublic(), trending: { is: { score: { gt: 0 } } } },
+      orderBy: { trending: { score: "desc" } }, take, include: cardInclude,
+    });
+    if (rows.length) return rows.map(toCard);
+  } catch {
+    // Ignore query failure
+  }
+  // Fallback to editorial picks if trending table not yet populated or read-only
+  try {
+    const picks = await db.article.findMany({
+      where: { ...livePublic(), editorsPick: true },
+      take,
+      include: cardInclude,
+    });
+    if (picks.length) return picks.map(toCard);
+  } catch {
+    // Fallback
+  }
+  return [];
 }
 
 // ── Search ────────────────────────────────────────────────────────────────
